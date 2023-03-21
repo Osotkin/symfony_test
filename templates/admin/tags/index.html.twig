@@ -1,0 +1,69 @@
+{% extends 'base_content.html.twig' %}
+
+{% block title %}Управление Тэгами{% endblock %}
+
+{% block content %}
+
+    <h1>Управление тэгами  ({{ pagination.totalItemCount }})</h1>
+
+    <form>
+        <div class="input-group mb-3">
+            <input type="text"
+                   name="q"
+                   class="form-control"
+                   placeholder="Найти..."
+                   value="{{ app.request.query.get('q') }}"
+            >
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-outline-secondary"><i class="fa fa-search"></i></button>
+            </div>
+        </div>
+
+
+        <div class="input-group mb-3">
+            <div class="form-check">
+                <input type="checkbox"
+                       name="showDeleted"
+                       class="form-check-input"
+                        {% if app.request.query.has('showDeleted') %} checked {% endif %}
+                >
+                <label class="form-check-label">Показать удаленные</label>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Тэг</th>
+            <th>Символьный код</th>
+            <th>Количество статей</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tag in pagination %}
+            <tr>
+                <td>{{ tag.name }}</td>
+                <td>{{ tag.slug }} {% if tag.deleted %} DELETED {% endif %}</td>
+                <td>
+                    <p>{{ tag.articles|length }}</p>
+
+                    {% for article in tag.articles %}
+                        <div>
+                            <a href="{{ path('app_article_show', {slug: article.slug}) }}">
+                                {{ article.title }}
+                            </a>
+                        </div>
+                    {% endfor %}
+
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Нет тэгов</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {{ knp_pagination_render(pagination) }}
+{% endblock %}
